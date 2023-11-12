@@ -13,6 +13,15 @@ install-sql-migrate:
 lint:
 	golangci-lint run ./...
 
+test:
+	go test ./...
+
+test-unit:
+	go test ./pkg/...
+
+test-integration:
+	go test ./tests/...
+
 run:
 	LOG_FORMAT=cli go run ./cmd/main.go
 

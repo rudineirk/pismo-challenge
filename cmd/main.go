@@ -14,7 +14,7 @@ import (
 
 func main() {
 	cfg, err := config.LoadConfig()
-	logger := logger.NewLogger(cfg)
+	logger := logger.FromCfg(cfg)
 
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Failed to load env config")

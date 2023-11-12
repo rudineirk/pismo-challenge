@@ -9,17 +9,25 @@ import (
 	"github.com/rudineirk/pismo-challenge/pkg/infra/config"
 )
 
-func NewLogger(cfg *config.Config) *zerolog.Logger {
+func NewStubLogger() *zerolog.Logger {
+	return NewLogger("", "disabled")
+}
+
+func FromCfg(cfg *config.Config) *zerolog.Logger {
+	return NewLogger(cfg.LogFormat, cfg.LogLevel)
+}
+
+func NewLogger(logFormat string, logLevel string) *zerolog.Logger {
 	var output io.Writer
 
-	switch cfg.LogFormat {
+	switch logFormat {
 	case "cli":
 		output = zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
 	default:
 		output = os.Stdout
 	}
 
-	level, err := zerolog.ParseLevel(cfg.LogLevel)
+	level, err := zerolog.ParseLevel(logLevel)
 	if err != nil {
 		level = zerolog.InfoLevel
 	}

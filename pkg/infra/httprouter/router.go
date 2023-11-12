@@ -46,7 +46,7 @@ func StructuredLogger(logger *zerolog.Logger) gin.HandlerFunc {
 
 		// Log using the params
 		var logEvent *zerolog.Event
-		if ctx.Writer.Status() >= 500 {
+		if ctx.Writer.Status() >= http.StatusInternalServerError {
 			logEvent = logger.Error() //nolint:zerologlint // it's being used bellow
 		} else {
 			logEvent = logger.Info() //nolint:zerologlint // it's being used bellow
@@ -72,7 +72,7 @@ func NewRouter(cfg *config.Config, logger *zerolog.Logger) *gin.Engine {
 	_ = router.SetTrustedProxies([]string{})
 
 	router.GET("/status", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"ok": true,
 		})
 	})
