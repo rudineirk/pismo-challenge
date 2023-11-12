@@ -28,10 +28,6 @@ func StructuredLogger(logger *zerolog.Logger) gin.HandlerFunc {
 		param.TimeStamp = time.Now() // Stop timer
 		param.Latency = param.TimeStamp.Sub(start)
 
-		if param.Latency > time.Minute {
-			param.Latency = param.Latency.Truncate(time.Second)
-		}
-
 		param.ClientIP = ctx.ClientIP()
 		param.Method = ctx.Request.Method
 		param.StatusCode = ctx.Writer.Status()

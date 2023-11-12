@@ -22,6 +22,10 @@ test-unit:
 test-integration:
 	go test ./tests/...
 
+test-coverage:
+	go test -coverpkg=./... -coverprofile=./coverage.out ./...
+	go tool cover -html=./coverage.out
+
 run:
 	LOG_FORMAT=cli go run ./cmd/main.go
 
