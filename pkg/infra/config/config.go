@@ -4,9 +4,10 @@ import "github.com/caarlos0/env/v10"
 
 type Config struct {
 	IsProduction bool
-	GoEnv        string `env:"GO_ENV"     envDefault:"development"`
-	HTTPPort     int    `env:"HTTP_PORT"  envDefault:"3000"`
-	LogLevel     string `env:"LOG_LEVEL"  envDefault:"info"`
+	GoEnv        string `env:"GO_ENV"       envDefault:"development"`
+	HTTPPort     int    `env:"HTTP_PORT"    envDefault:"3000"`
+	DatabaseURL  string `env:"DATABASE_URL" envDefault:"postgresql://dev:development@127.0.0.1/pismo_challenge?sslmode=disable"` //nolint:lll // default value
+	LogLevel     string `env:"LOG_LEVEL"    envDefault:"info"`
 	LogFormat    string `env:"LOG_FORMAT"`
 }
 

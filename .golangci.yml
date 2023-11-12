@@ -34,7 +34,13 @@ linters:
   disable:
     - gofumpt
     - gomnd
+    - gci
     - nolintlint
     - depguard
     - wrapcheck
     - exhaustruct
+linters-settings:
+  revive:
+    rules:
+      - name: blank-imports
+        disabled: true

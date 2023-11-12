@@ -14,6 +14,7 @@ services:
       - 5432:5432
   server:
     build: .
+    restart: always
     environment:
       - DATABASE_URL=postgresql://dev:development@postgres/pismo_challenge?sslmode=disable
     ports:

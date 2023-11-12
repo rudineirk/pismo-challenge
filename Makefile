@@ -1,4 +1,4 @@
-install: install-linter install-sql-migrate install-deps
+install: install-linter install-deps
 
 install-deps:
 	go mod download
@@ -6,9 +6,6 @@ install-deps:
 
 install-linter:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
-
-install-sql-migrate:
-	go install github.com/rubenv/sql-migrate/sql-migrate@latest
 
 lint:
 	golangci-lint run ./...

@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
-	"github.com/rudineirk/pismo-challenge/pkg/infra/config"
 )
 
 var defaultTimeout = 60 * time.Second    //nolint:gochecknoglobals // default value
@@ -17,30 +16,14 @@ func StructuredLogger(logger *zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		start := time.Now() // Start timer
 		path := ctx.Request.URL.Path
-		raw := ctx.Request.URL.RawQuery
 
-		// Process request
-		ctx.Next()
-
-		// Fill the params
-		param := gin.LogFormatterParams{}
-
-		param.TimeStamp = time.Now() // Stop timer
-		param.Latency = param.TimeStamp.Sub(start)
-
-		param.ClientIP = ctx.ClientIP()
-		param.Method = ctx.Request.Method
-		param.StatusCode = ctx.Writer.Status()
-		param.ErrorMessage = ctx.Errors.ByType(gin.ErrorTypePrivate).String()
-		param.BodySize = ctx.Writer.Size()
-
-		if raw != "" {
-			path = path + "?" + raw
+		rawQuery := ctx.Request.URL.RawQuery
+		if rawQuery != "" {
+			path = path + "?" + rawQuery
 		}
 
-		param.Path = path
+		ctx.Next()
 
-		// Log using the params
 		var logEvent *zerolog.Event
 		if ctx.Writer.Status() >= http.StatusInternalServerError {
 			logEvent = logger.Error() //nolint:zerologlint // it's being used bellow
@@ -48,18 +31,18 @@ func StructuredLogger(logger *zerolog.Logger) gin.HandlerFunc {
 			logEvent = logger.Info() //nolint:zerologlint // it's being used bellow
 		}
 
-		logEvent.Str("client_id", param.ClientIP).
-			Str("method", param.Method).
-			Int("status_code", param.StatusCode).
-			Int("body_size", param.BodySize).
-			Str("path", param.Path).
-			Int64("latency_us", param.Latency.Microseconds()).
-			Msg(param.ErrorMessage)
+		logEvent.Str("client_id", ctx.ClientIP()).
+			Str("method", ctx.Request.Method).
+			Int("status_code", ctx.Writer.Status()).
+			Int("body_size", ctx.Writer.Size()).
+			Str("path", path).
+			Int64("latency_us", time.Since(start).Microseconds()).
+			Msg(ctx.Errors.ByType(gin.ErrorTypePrivate).String())
 	}
 }
 
-func NewRouter(cfg *config.Config, logger *zerolog.Logger) *gin.Engine {
-	if cfg.IsProduction {
+func NewRouter(logger *zerolog.Logger, isProduction bool) *gin.Engine {
+	if isProduction {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
@@ -67,18 +50,12 @@ func NewRouter(cfg *config.Config, logger *zerolog.Logger) *gin.Engine {
 	router.Use(StructuredLogger(logger), gin.Recovery())
 	_ = router.SetTrustedProxies([]string{})
 
-	router.GET("/status", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"ok": true,
-		})
-	})
-
 	return router
 }
 
-func NewServer(cfg *config.Config, router http.Handler) *http.Server {
+func NewServer(httpPort int, router http.Handler) *http.Server {
 	return &http.Server{
-		Addr:              fmt.Sprintf(":%d", cfg.HTTPPort),
+		Addr:              fmt.Sprintf(":%d", httpPort),
 		Handler:           router,
 		ReadTimeout:       defaultTimeout,
 		ReadHeaderTimeout: defaultTimeout,
