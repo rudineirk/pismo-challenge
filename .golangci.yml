@@ -39,6 +39,10 @@ linters:
     - depguard
     - wrapcheck
     - exhaustruct
+    - nlreturn
+    - tagliatelle
+    - inamedparam
+    - ireturn
 linters-settings:
   revive:
     rules:
