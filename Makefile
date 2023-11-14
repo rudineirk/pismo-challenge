@@ -27,7 +27,8 @@ test-integration:
 	go test ./tests/...
 
 test-coverage:
-	go test -coverpkg=./... -coverprofile=./coverage.out ./...
+	go test -coverpkg=./... -coverprofile=./coverage.out ./... && \
+		grep -v mock coverage.out > tmpcoverage && mv tmpcoverage coverage.out
 	go tool cover -html=./coverage.out
 
 run:
