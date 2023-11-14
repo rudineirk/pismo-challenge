@@ -3,8 +3,10 @@ package accounts
 import (
 	"bytes"
 	"context"
+	"time"
 	"unicode"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/paemuri/brdoc/v2"
 	"github.com/rudineirk/pismo-challenge/pkg/utils/errorlib"
 )
@@ -15,27 +17,49 @@ var ErrInvalidDocumentNumber = errorlib.NewError( //nolint:gochecknoglobals // e
 )
 
 type Service interface {
-	CreateAccount(context.Context, *Account) error
+	CreateAccount(context.Context, *CreateAccountRequest) (*Account, error)
 	GetAccountByID(context.Context, int64) (*Account, error)
 }
 
+type CreateAccountRequest struct {
+	DocumentNumber string `json:"document_number" validate:"required"`
+}
+
 type accountsService struct {
-	repo Repository
+	repo     Repository
+	validate *validator.Validate
 }
 
 func NewService(repo Repository) Service {
-	return &accountsService{repo: repo}
+	return &accountsService{
+		repo:     repo,
+		validate: validator.New(validator.WithRequiredStructEnabled()),
+	}
 }
 
-func (svc *accountsService) CreateAccount(ctx context.Context, account *Account) error {
-	documentNumber := svc.cleanDocumentNumber(account.DocumentNumber)
+func (svc *accountsService) CreateAccount(ctx context.Context, req *CreateAccountRequest) (*Account, error) {
+	if err := svc.validate.Struct(req); err != nil {
+		return nil, errorlib.ErrInvalidPayload(err)
+	}
+
+	documentNumber := svc.cleanDocumentNumber(req.DocumentNumber)
 	if err := svc.validateDocument(documentNumber); err != nil {
-		return err
+		return nil, err
+	}
+
+	account := &Account{
+		DocumentNumber: documentNumber,
 	}
 
 	account.DocumentNumber = documentNumber
+	account.CreatedAt = time.Now()
+	account.UpdatedAt = account.CreatedAt
 
-	return svc.repo.CreateAccount(ctx, account)
+	if err := svc.repo.CreateAccount(ctx, account); err != nil {
+		return nil, err
+	}
+
+	return account, nil
 }
 
 func (svc *accountsService) GetAccountByID(ctx context.Context, id int64) (*Account, error) {

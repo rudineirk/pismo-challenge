@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/rudineirk/pismo-challenge/pkg/domains/accounts"
 	"github.com/rudineirk/pismo-challenge/pkg/infra/config"
 	"github.com/rudineirk/pismo-challenge/pkg/infra/database"
 	"github.com/rudineirk/pismo-challenge/pkg/infra/httprouter"
@@ -44,6 +45,10 @@ func main() {
 			logger.Err(err).Msg("Server shutdown error")
 		}
 	})
+
+	accountsRepo := accounts.NewRepository(bunDB)
+	accountsSvc := accounts.NewService(accountsRepo)
+	accounts.SetupHTTPRoutes(router, accountsSvc)
 
 	logger.Info().Msg(fmt.Sprintf("Starting server on http://localhost%s", httpserver.Addr))
 

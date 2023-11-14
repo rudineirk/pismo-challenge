@@ -6,19 +6,16 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/rudineirk/pismo-challenge/pkg/utils/errorlib"
 )
 
 type httpHandler struct {
-	service  Service
-	validate *validator.Validate
+	service Service
 }
 
 func SetupHTTPRoutes(router *gin.Engine, service Service) {
 	handler := httpHandler{
-		service:  service,
-		validate: validator.New(validator.WithRequiredStructEnabled()),
+		service: service,
 	}
 
 	routeGroup := router.Group("/accounts")
@@ -27,22 +24,15 @@ func SetupHTTPRoutes(router *gin.Engine, service Service) {
 }
 
 func (handler *httpHandler) CreateAccount(ctx *gin.Context) {
-	req := CreateAccountAPIRequest{}
-
-	if err := ctx.BindJSON(req); err != nil {
+	req := CreateAccountRequest{}
+	if err := ctx.BindJSON(&req); err != nil {
 		return
 	}
 
-	if err := handler.validate.Struct(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorlib.ErrInvalidPayload(nil))
-	}
+	account, err := handler.service.CreateAccount(ctx, &req)
 
-	account := Account{
-		DocumentNumber: req.DocumentNumber,
-	}
-
-	if err := handler.service.CreateAccount(ctx, &account); err != nil {
-		if errors.Is(err, ErrInvalidDocumentNumber(nil)) {
+	if err != nil {
+		if errors.Is(err, ErrInvalidDocumentNumber(nil)) || errors.Is(err, errorlib.ErrInvalidPayload(nil)) {
 			ctx.JSON(http.StatusBadRequest, err)
 		} else if errors.Is(err, errorlib.ErrDuplicated(nil)) {
 			ctx.JSON(http.StatusConflict, err)
@@ -53,7 +43,7 @@ func (handler *httpHandler) CreateAccount(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, NewAPIResponseFromEntity(&account))
+	ctx.JSON(http.StatusCreated, NewAPIResponseFromEntity(account))
 }
 
 func (handler *httpHandler) GetAccountByID(ctx *gin.Context) {
@@ -77,4 +67,16 @@ func (handler *httpHandler) GetAccountByID(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, NewAPIResponseFromEntity(account))
+}
+
+type AccountAPIResponse struct {
+	AccountID      int64  `json:"account_id"`
+	DocumentNumber string `json:"document_number"`
+}
+
+func NewAPIResponseFromEntity(account *Account) *AccountAPIResponse {
+	return &AccountAPIResponse{
+		AccountID:      account.ID,
+		DocumentNumber: account.DocumentNumber,
+	}
 }
