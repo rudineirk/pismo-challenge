@@ -13,5 +13,5 @@ func NewAPIResponseFromEntity(account *Account) *AccountAPIResponse {
 }
 
 type CreateAccountAPIRequest struct {
-	DocumentNumber string `json:"document_number" validate:"required,numeric"`
+	DocumentNumber string `json:"document_number" validate:"required"`
 }

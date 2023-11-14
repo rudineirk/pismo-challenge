@@ -11,6 +11,7 @@ run:
     - .vscode
   skip-files:
     - "./...*_test.go"
+    - "./...*_mock.go"
   skip-dirs-use-default: false
   modules-download-mode: mod
   allow-parallel-runners: true
@@ -43,6 +44,7 @@ linters:
     - tagliatelle
     - inamedparam
     - ireturn
+    - gocritic
 linters-settings:
   revive:
     rules:

@@ -11,6 +11,11 @@ import (
 	"github.com/uptrace/bun"
 )
 
+type Repository interface {
+	CreateAccount(context.Context, *Account) error
+	GetAccountByID(context.Context, int64) (*Account, error)
+}
+
 type AccountModel struct {
 	bun.BaseModel  `bun:"table:accounts"`
 	ID             int64     `bun:"id,pk,autoincrement"`
@@ -35,11 +40,6 @@ func (model *AccountModel) ToEntity() *Account {
 		CreatedAt:      model.CreatedAt,
 		UpdatedAt:      model.UpdatedAt,
 	}
-}
-
-type Repository interface {
-	CreateAccount(context.Context, *Account) error
-	GetAccountByID(context.Context, int64) (*Account, error)
 }
 
 type dbRepository struct {

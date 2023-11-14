@@ -42,7 +42,9 @@ func (handler *httpHandler) CreateAccount(ctx *gin.Context) {
 	}
 
 	if err := handler.service.CreateAccount(ctx, &account); err != nil {
-		if errors.Is(err, errorlib.ErrDuplicated(nil)) {
+		if errors.Is(err, ErrInvalidDocumentNumber(nil)) {
+			ctx.JSON(http.StatusBadRequest, err)
+		} else if errors.Is(err, errorlib.ErrDuplicated(nil)) {
 			ctx.JSON(http.StatusConflict, err)
 		} else {
 			_ = ctx.AbortWithError(http.StatusInternalServerError, err)

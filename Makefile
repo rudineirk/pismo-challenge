@@ -1,4 +1,4 @@
-install: install-linter install-deps
+install: install-linter install-mockgen install-deps
 
 install-deps:
 	go mod download
@@ -7,8 +7,15 @@ install-deps:
 install-linter:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
 
+install-mockgen:
+	go install go.uber.org/mock/mockgen@v0.3.0
+
 lint:
 	golangci-lint run ./...
+
+gen-mocks:
+	mockgen -source ./pkg/domains/accounts/repository.go \
+		-destination ./pkg/domains/accounts/mocks/repository_mock.go
 
 test:
 	go test ./...
