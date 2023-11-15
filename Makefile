@@ -16,6 +16,10 @@ lint:
 gen-mocks:
 	mockgen -source ./pkg/domains/accounts/repository.go \
 		-destination ./pkg/domains/accounts/mocks/repository_mock.go
+	mockgen -source ./pkg/domains/accounts/service.go \
+		-destination ./pkg/domains/accounts/mocks/service_mock.go
+	mockgen -source ./pkg/domains/transactions/repository.go \
+		-destination ./pkg/domains/transactions/mocks/repository_mock.go
 
 test:
 	go test ./...

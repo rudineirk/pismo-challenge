@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/rudineirk/pismo-challenge/pkg/domains/accounts"
+	"github.com/rudineirk/pismo-challenge/pkg/domains/transactions"
 	"github.com/rudineirk/pismo-challenge/pkg/infra/config"
 	"github.com/rudineirk/pismo-challenge/pkg/infra/database"
 	"github.com/rudineirk/pismo-challenge/pkg/infra/httprouter"
@@ -49,6 +50,10 @@ func main() {
 	accountsRepo := accounts.NewRepository(bunDB)
 	accountsSvc := accounts.NewService(accountsRepo)
 	accounts.SetupHTTPRoutes(router, accountsSvc)
+
+	transactionsRepo := transactions.NewRepository(bunDB)
+	transactionsSvc := transactions.NewService(transactionsRepo, accountsSvc)
+	transactions.SetupHTTPRoutes(router, transactionsSvc)
 
 	logger.Info().Msg(fmt.Sprintf("Starting server on http://localhost%s", httpserver.Addr))
 

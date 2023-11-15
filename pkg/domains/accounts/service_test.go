@@ -45,7 +45,7 @@ func TestCreateAccount(t *testing.T) {
 			}
 
 			account, err := svc.CreateAccount(ctx, req)
-			assert.Nil(t, err)
+			assert.NoError(t, err)
 
 			assert.Equal(t, int64(1), account.ID)
 			assert.Equal(t, documentNumber, account.DocumentNumber)
@@ -110,7 +110,7 @@ func TestGetAccountByID(t *testing.T) {
 		Return(account, nil)
 
 	result, err := svc.GetAccountByID(ctx, account.ID)
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	assert.Equal(t, int64(1), result.ID)
 	assert.Equal(t, documentNumber, result.DocumentNumber)

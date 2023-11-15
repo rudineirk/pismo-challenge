@@ -11,6 +11,7 @@ require (
 	github.com/rs/zerolog v1.31.0
 	github.com/rubenv/sql-migrate v1.5.2
 	github.com/satori/go.uuid v1.2.0
+	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.4
 	github.com/uptrace/bun v1.1.16
 	github.com/uptrace/bun/dialect/pgdialect v1.1.16

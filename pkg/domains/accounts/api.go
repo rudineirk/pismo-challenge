@@ -32,7 +32,10 @@ func (handler *httpHandler) CreateAccount(ctx *gin.Context) {
 	account, err := handler.service.CreateAccount(ctx, &req)
 
 	if err != nil {
-		if errors.Is(err, ErrInvalidDocumentNumber(nil)) || errors.Is(err, errorlib.ErrInvalidPayload(nil)) {
+		isBadRequest := errors.Is(err, ErrInvalidDocumentNumber(nil)) ||
+			errors.Is(err, errorlib.ErrInvalidPayload(nil))
+
+		if isBadRequest {
 			ctx.JSON(http.StatusBadRequest, err)
 		} else if errors.Is(err, errorlib.ErrDuplicated(nil)) {
 			ctx.JSON(http.StatusConflict, err)

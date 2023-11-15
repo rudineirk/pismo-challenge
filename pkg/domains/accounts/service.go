@@ -49,10 +49,9 @@ func (svc *accountsService) CreateAccount(ctx context.Context, req *CreateAccoun
 
 	account := &Account{
 		DocumentNumber: documentNumber,
+		CreatedAt:      time.Now(),
 	}
 
-	account.DocumentNumber = documentNumber
-	account.CreatedAt = time.Now()
 	account.UpdatedAt = account.CreatedAt
 
 	if err := svc.repo.CreateAccount(ctx, account); err != nil {
