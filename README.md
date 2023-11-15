@@ -91,6 +91,8 @@ make test-integration
 make test-coverage
 ```
 
+You can also view the coverage report [on this link](http://rudineirk.github.io/pismo-challenge/coverage/)
+
 ## Improvements for this project 📈
 
 To run this project in production, there are some things that could be implemented before to ensure it runs smoothly:
