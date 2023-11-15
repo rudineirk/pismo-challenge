@@ -48,3 +48,6 @@ migrate:
 	cd scripts/db && \
 		DATABASE_URL="postgresql://dev:development@127.0.0.1/pismo_challenge?sslmode=disable" \
 		sql-migrate up
+
+gen-docs:
+	npx @redocly/cli build-docs -o ./docs/output.html ./docs/openapi.yaml

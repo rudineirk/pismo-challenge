@@ -21,3 +21,6 @@ vendor/
 go.work
 
 main
+
+# generated OpenAPI docs
+docs/output.html
