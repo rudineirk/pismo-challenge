@@ -4,9 +4,6 @@
 
 This is a project to manage cardholder accounts and transactions. It was implemented using Golang, based on the clean architecture pattern.
 
-The app is deployed on GCP using [Cloud Run](https://cloud.google.com/run), try calling the APIs on the URL bellow:
-* https://pismo-challenge-bwvpv7mptq-uc.a.run.app/
-
 ## API documentation 📖
 
 The API documentation is available as an OpenAPI yaml [here](./docs/openapi.yaml). You can also view the rendered version [on this link](http://rudineirk.github.io/pismo-challenge/api-docs/)
